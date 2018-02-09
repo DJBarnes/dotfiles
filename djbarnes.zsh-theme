@@ -1,5 +1,5 @@
-# mashup of eastwood, soliah and juanghurtado themes
-# by Joshua Antonishen
+# mashup of eastwood, soliah, juanghurtado and antonishen themes
+# by David Barnes
 
 # Color shortcuts
 RED=$fg[red]
@@ -40,7 +40,7 @@ ZSH_THEME_GIT_PROMPT_AHEAD=" %{$fg[white]%}(⚡)"
 ZSH_THEME_GIT_PROMPT_SHA_BEFORE="%{$fg[yellow]%}::%{$fg[blue]%}"
 ZSH_THEME_GIT_PROMPT_SHA_AFTER="%{$fg[white]%}"
 
-#RVM settings
+# RVM prompt settings
 if [[ -s ~/.rvm/scripts/rvm ]] ; then
   RPS1="%{$fg[yellow]%}rvm%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
 else
@@ -48,6 +48,9 @@ else
     RPS1="%{$fg[yellow]%}rbenv%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
   fi
 fi
+
+# PHP prompt settings
+RPS1="%{$fg[yellow]%}php%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
 
 # old pos was after current_branch for... $(git_prompt_short_sha)
 # old pos was before dirty status for...$(git_prompt_status)

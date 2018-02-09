@@ -1,25 +1,22 @@
+# Zsh config
 ZSH=$HOME/.oh-my-zsh
 
+# Zsh theme
 ZSH_THEME="djbarnes"
 
-plugins=(git rvm brew gem osx ruby rails)
+# Define Oh-My-Zsh plugins
+plugins=(git brew osx composer django python pip)
 
+# Load Oh-My-Zsh
 source $ZSH/oh-my-zsh.sh
 
-export PATH=$HOME/.bin:/usr/local/sbin:/usr/local/bin:${PATH}
-export PATH=/Applications/Postgres.app/Contents/MacOS/bin:$PATH
-export NODE_PATH=/usr/local/lib/node_modules
+# Load non-public .zshrc
+if [ -f $HOME/.zshrc-private ]; then
+  source $HOME/.zshrc-private
+fi
 
-export JASMINE_BROWSER=chrome
-
-# RVM
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function
-__rvm_project_rvmrc
-# Add RVM to PATH for scripting
-PATH=$PATH:$HOME/.rvm/bin
-
+# Allow auto cd-ing
 setopt auto_cd
-cdpath=($HOME/Dropbox/Code)
 
 # make <C-s> work in terminal vim
 stty -ixon
@@ -31,16 +28,27 @@ setopt histignoredups
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 
-# ALIASES
+###################
+# Functions
+###################
+
+# Check for OS
+onLinux () {
+  if [[ `uname` == 'Linux' ]]; then
+    return true
+  # Assuming only used on Linux and Mac so else should be
+  # equivalent to an if as follows: [[ `uname` == 'Darwin']]; then
+  else
+    return false
+  fi
+}
+
+###################
+# Aliases
+###################
+
+# directory
 alias rm="rm -i"
-
-# tmux
-alias t="tmux -u new -s"
-alias ta="tmux attach-session -t"
-alias tls="tmux list-sessions"
-
-# bundler
-alias be="bundle exec"
 
 # git
 alias gco="git checkout"
@@ -58,6 +66,12 @@ alias gll="git ll"
 alias gp="git push"
 alias gm="git merge"
 alias gpl="git pull"
+alias gbv="git branch -v"
+alias gpr="git remote prune origin"
+alias gr="git remote -v"
+alias grd="git push origin --delete"
+alias gltree="git log --graph --oneline --decorate --all"
+alias gbtree="git log --graph --simplify-by-decoration --pretty=format:'%d' --all"
 
 # laravel
 alias art="php artisan"
@@ -65,44 +79,43 @@ alias artmig="php artisan migrate"
 alias artrol="php artisan migrate:rollback"
 alias artseed="php artisan db:seed"
 
-# rvm
-alias rgu="rvm gemset use"
+# phpunit
+alias pu="./vendor/phpunit/phpunit/phpunit"
+alias puf="./vendor/phpunit/phpunit/phpunit --filter"
+alias puts="./vendor/phpunit/phpunit/phpunit --testsuite"
+alias putc="./vendor/phpunit/phpunit/phpunit --coverage-html ~/tempCoverage"
+alias putcf="./vendor/phpunit/phpunit/phpunit --coverage-html ~/tempCoverage --filter"
+alias putcts="./vendor/phpunit/phpunit/phpunit --coverage-html ~/tempCoverage --testsuite"
+alias pucts="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage --testsuite"
+alias puc="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage"
 
-# rails
-alias rg="rails generate"
-alias rd="rails destroy"
-
-# 'prev' will cd you to the last directory that you cd'ed into
-export PREV_PATH=$HOME/.prev-path
-
-# run everytime you cd
-function chpwd {
-  echo $(pwd) >! $PREV_PATH
-}
-
-prev() {
-  if [[ -f $PREV_PATH ]]; then
-    echo "$(cat $PREV_PATH)"
-    cd "$(cat $PREV_PATH)"
-  fi
-}
-
-PATH=$PATH:$HOME/scripts
-
-alias www='cd /Applications/MAMP/htdocs/'
-
-alias mmysql='/Applications/MAMP/Library/bin/mysql'
-alias mmysqldump='/Applications/MAMP/Library/bin/mysqldump'
-
+# python
 alias py="python"
 
-PATH=$PATH:/usr/local/bin
-PATH=$PATH:/usr/local/pear/bin
-PATH=$PATH:/usr/local/pear/share/pear
+# OS dependent
+if [[ onLinux ]]; then
+  # mysql
+  alias mmysql='/opt/lampp/bin/mysql'
+  alias mmysqldump='/opt/lampp/bin/mysqldump'
+  # directory
+  alias www='cd /opt/lampp/htdocs'
+else
+  # mysql
+  alias mmysql='/Applications/MAMP/Library/bin/mysql'
+  alias mmysqldump='/Applications/MAMP/Library/bin/mysqldump'
+  # directory
+  alias www='cd /Applications/MAMP/htdocs/'
+fi
 
-PATH=$PATH:/opt/local/bin
+###################
+# PATH additions
+###################
 
+# Beginning Appends
+PATH=/usr/local/bin:$PATH
+PATH=/opt/lampp/bin:$PATH
 PATH=/usr/local/share/python:$PATH
+PATH=$HOME/.composer/vendor/bin:$PATH
 
-export MAMP_PHP=/Applications/MAMP/bin/php/php5.3.20/bin
-export PATH="$MAMP_PHP:$PATH"
+# Ending Appends
+PATH=$HOME/.bin:/usr/local/sbin:/usr/local/bin:$PATH
