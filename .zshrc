@@ -73,6 +73,10 @@ alias grd="git push origin --delete"
 alias gltree="git log --graph --oneline --decorate --all"
 alias gbtree="git log --graph --simplify-by-decoration --pretty=format:'%d' --all"
 
+# composer
+alias cdump="composer dump-autoload"
+alias crequire="composer require"
+
 # laravel
 alias art="php artisan"
 alias artmig="php artisan migrate"
@@ -90,6 +94,7 @@ alias pucts="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage --tests
 alias puc="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage"
 
 # python
+alias python="python3"
 alias py="python"
 
 # OS dependent
