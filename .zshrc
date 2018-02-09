@@ -94,7 +94,12 @@ alias pucts="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage --tests
 alias puc="./vendor/phpunit/phpunit/phpunit --coverage-html ~/coverage"
 
 # python
-alias python="python3"
+if [ $(which python3) ]; then
+    alias python="python3"
+fi
+if [ $(which pip3) ]; then
+    alias pip="pip3"
+fi
 alias py="python"
 
 # OS dependent
