@@ -40,17 +40,29 @@ ZSH_THEME_GIT_PROMPT_AHEAD=" %{$fg[white]%}(⚡)"
 ZSH_THEME_GIT_PROMPT_SHA_BEFORE="%{$fg[yellow]%}::%{$fg[blue]%}"
 ZSH_THEME_GIT_PROMPT_SHA_AFTER="%{$fg[white]%}"
 
-# RVM prompt settings
-if [[ -s ~/.rvm/scripts/rvm ]] ; then
-  RPS1="%{$fg[yellow]%}rvm%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
-else
-  if which rbenv &> /dev/null; then
-    RPS1="%{$fg[yellow]%}rbenv%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
-  fi
-fi
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-# PHP prompt settings
-RPS1="%{$fg[yellow]%}php%{$fg[blue]%}:%{$reset_color%}%{$fg[red]%}\$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+# Secondary prompt settings
+rps1_custom_prompt() {
+
+  python_venv="${VIRTUAL_ENV##*/}"
+
+  if [[ -n $python_venv ]]; then
+    computedRPS1="%{$fg[cyan]%}pyve%{$reset_color%}:%{$fg[magenta]%}$venv%{$reset_color%} $EPS1"
+  elif [[ -s ~/.rvm/scripts/rvm ]] ; then
+    computedRPS1="%{$fg[red]%}rvm%{$reset_color%}:%{$fg[yellow]%}$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
+  elif which rbenv &> /dev/null; then
+    computedRPS1="%{$fg[red]%}rbenv%{$reset_color%}:%{$fg[yellow]%}$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
+  else
+    computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+  fi
+
+  echo $computedRPS1
+}
+
+# Set the RPS1 prompt
+RPS1='$(rps1_custom_prompt)'
 
 # old pos was after current_branch for... $(git_prompt_short_sha)
 # old pos was before dirty status for...$(git_prompt_status)
