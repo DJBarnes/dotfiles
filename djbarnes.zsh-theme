@@ -1,4 +1,4 @@
-# mashup of eastwood, soliah, juanghurtado and antonishen themes
+# mashup of eastwood, soliah, juanghurtado and antonishen themes with a lot of custom work for RPS1
 # by David Barnes
 
 # Color shortcuts
@@ -43,19 +43,87 @@ ZSH_THEME_GIT_PROMPT_SHA_AFTER="%{$fg[white]%}"
 # disable the default virtualenv prompt change
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
+# method that can be used to search from the current working dir up to root for a file
+file_exists_up_search () {
+  path=$(pwd)
+  while [[ "$path" != "" && ! -e "$path/$1" ]]; do
+    path=${path%/*}
+  done
+  echo "$path"
+}
+
 # Secondary prompt settings
 rps1_custom_prompt() {
 
   python_venv="${VIRTUAL_ENV##*/}"
 
-  if [[ -n $python_venv ]]; then
-    computedRPS1="%{$fg[cyan]%}pyve%{$reset_color%}:%{$fg[magenta]%}$venv%{$reset_color%} $EPS1"
-  elif [[ -s ~/.rvm/scripts/rvm ]] ; then
-    computedRPS1="%{$fg[red]%}rvm%{$reset_color%}:%{$fg[yellow]%}$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
-  elif which rbenv &> /dev/null; then
-    computedRPS1="%{$fg[red]%}rbenv%{$reset_color%}:%{$fg[yellow]%}$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
+  set -o nonomatch
+
+  python_count=`ls -1 *.py 2>/dev/null | wc -l`
+  php_count=`ls -1 *.php 2>/dev/null | wc -l`
+  javascript_count=`ls -1 *.js 2>/dev/null | wc -l`
+  ruby_count=`ls -1 *.rb 2>/dev/null | wc -l`
+
+  if [ $python_count != 0 ] || [[ -n $python_venv ]]; then
+    if which python &> /dev/null; then
+      if [[ -n $python_venv ]]; then
+        # Python with virutal env
+        computedRPS1="%{$fg[cyan]%}ve%{$reset_color%}:%{$fg[magenta]%}$python_venv%{$reset_color%}/%{$fg[blue]%}py%{$reset_color%}:%{$fg[yellow]%}$(python -V | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+      else
+        # Python without virtual env
+        computedRPS1="%{$fg[blue]%}py%{$reset_color%}:%{$fg[yellow]%}$(python -V | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+      fi
+    else
+      # No Python Found
+      computedRPS1="%{$fg[blue]%}py%{$reset_color%}:%{$fg[yellow]%}null%{$reset_color%} $EPS1"
+    fi
+  elif [ $php_count != 0 ]; then
+    if which php &> /dev/null; then
+      composerPath=$(file_exists_up_search composer.json)
+      if [ -n $composerPath ] && grep -q laravel "$composerPath/composer.json" && [ -d "$composerPath/vendor" ]; then
+        # In a PHP Laravel Project
+        laravelVersion=`php $composerPath/artisan --version | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*'`
+        computedRPS1="%{$fg_bold[red]%}lara%{$reset_color%}:%{$fg[yellow]%}$laravelVersion%{$reset_color%}/%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+      else
+        # Plain old PHP
+        computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+      fi
+    else
+      # No PHP Found
+      computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}null%{$reset_color%} $EPS1"
+    fi
+  elif [ $javascript_count != 0 ]; then
+    if which node &> /dev/null; then
+      # Node with node
+      computedRPS1="%{$fg[green]%}node%{$reset_color%}:%{$fg[yellow]%}$(python -V | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+    else
+      # Node with no node
+      computedRPS1="%{$fg[green]%}node%{$reset_color%}:%{$fg[yellow]%}null%{$reset_color%} $EPS1"
+    fi
+  elif [ $ruby_count != 0 ]; then
+    if [[ -s ~/.rvm/scripts/rvm ]] ; then
+      # Ruby with RVM
+      computedRPS1="%{$fg[red]%}rvm%{$reset_color%}:%{$fg[yellow]%}$(~/.rvm/bin/rvm-prompt)%{$reset_color%} $EPS1"
+    elif which rbenv &> /dev/null; then
+      # Ruby with rbenv
+      computedRPS1="%{$fg[red]%}rbenv%{$reset_color%}:%{$fg[yellow]%}$(rbenv version | sed -e 's/ (set.*$//')%{$reset_color%} $EPS1"
+    elif which ruby &> /dev/null; then
+      # Ruby with Regular Ruby Version
+      computedRPS1="%{$fg[red]%}ruby%{$reset_color%}:%{$fg[yellow]%}$(ruby -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+    else
+      # No Ruby Found
+      computedRPS1="%{$fg[red]%}ruby%{$reset_color%}:%{$fg[yellow]%}null%{$reset_color%} $EPS1"
+    fi
   else
-    computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+    # Not looking at directory with code
+    # TODO: Change this default to whatever you might want. For me it is just PHP
+    if which php &> /dev/null; then
+      # PHP
+      computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+    else
+      # No PHP Found
+      computedRPS1="%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}null%{$reset_color%} $EPS1"
+    fi
   fi
 
   echo $computedRPS1
