@@ -64,6 +64,8 @@ rps1_custom_prompt() {
   javascript_count=`ls -1 *.js 2>/dev/null | wc -l`
   ruby_count=`ls -1 *.rb 2>/dev/null | wc -l`
 
+  composerPath=$(file_exists_up_search composer.json)
+
   if [ $python_count != 0 ] || [[ -n $python_venv ]]; then
     if which python &> /dev/null; then
       if [[ -n $python_venv ]]; then
@@ -77,10 +79,9 @@ rps1_custom_prompt() {
       # No Python Found
       computedRPS1="%{$fg[blue]%}py%{$reset_color%}:%{$fg[yellow]%}null%{$reset_color%} $EPS1"
     fi
-  elif [ $php_count != 0 ]; then
+  elif [ $php_count != 0 ] || [[ -n $composerPath ]]; then
     if which php &> /dev/null; then
-      composerPath=$(file_exists_up_search composer.json)
-      if [ -n $composerPath ] && grep -q laravel "$composerPath/composer.json" && [ -d "$composerPath/vendor" ]; then
+      if [[ -n $composerPath ]] && grep -q laravel "$composerPath/composer.json" && [ -d "$composerPath/vendor" ]; then
         # In a PHP Laravel Project
         laravelVersion=`php $composerPath/artisan --version | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*'`
         computedRPS1="%{$fg_bold[red]%}lara%{$reset_color%}:%{$fg[yellow]%}$laravelVersion%{$reset_color%}/%{$fg_bold[magenta]%}php%{$reset_color%}:%{$fg[red]%}$(php -v | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
