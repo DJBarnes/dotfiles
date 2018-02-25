@@ -145,7 +145,7 @@ create_ruby_prompt() {
 create_javascript_prompt() {
   if which node &> /dev/null; then
     # Node with node
-    computedRPS1="%{$fg[green]%}node%{$reset_color%}:%{$fg[yellow]%}$(python -V | grep -Eo '.{0,20}(cli).' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
+    computedRPS1="%{$fg[green]%}node%{$reset_color%}:%{$fg[yellow]%}$(node -v | grep -Eo '[0-9]*\.[0-9]*\.[0-9]*')%{$reset_color%} $EPS1"
   else
     # Node with no node
     computedRPS1="%{$fg[green]%}node%{$reset_color%}:%{$fg[yellow]%}null%{$reset_color%} $EPS1"
