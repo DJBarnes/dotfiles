@@ -101,6 +101,7 @@ if [ $(which pip3) ]; then
     alias pip="pip3"
 fi
 alias py="python"
+alias manage="python manage.py"
 
 # OS dependent
 if [[ onLinux ]]; then
