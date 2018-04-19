@@ -70,16 +70,16 @@ rps1_custom_prompt() {
   ruby_count=`ls -1 *.rb 2>/dev/null | wc -l`
 
   # If there are python files or an activated python venv
-  if [ $python_count != 0 ] || [[ -n $python_venv ]]; then
+  if [ $(($python_count)) != 0 ] || [[ -n $python_venv ]]; then
     computedRPS1=$(create_python_prompt)
   # Else If there are php files or a composer.json in the paths to root
-  elif [ $php_count != 0 ] || [[ -n $composerPath ]]; then
+  elif [ $(($php_count)) != 0 ] || [[ -n $composerPath ]]; then
     computedRPS1=$(create_php_prompt)
   # Else if there are ruby files
-  elif [ $ruby_count != 0 ]; then
+  elif [ $(($ruby_count)) != 0 ]; then
     computedRPS1=$(create_ruby_prompt)
   # Else if there are JavaScript files
-  elif [ $javascript_count != 0 ]; then
+  elif [ $(($javascript_count)) != 0 ]; then
     computedRPS1=$(create_javascript_prompt)
   # Else we should us the default prompt (PHP for me)
   else
